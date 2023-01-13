@@ -11,11 +11,12 @@ func main() {
 	var seen = make(map[string]bool)
 
 	interval := 5 * time.Second
-	query := "#crypto"
+	clearInterval := 2 * time.Hour
+	query := "#crypto #BTC"
 	scraper := twitterscraper.New()
 
 	for range time.Tick(interval) {
-		for tweet := range scraper.SearchTweets(context.Background(), query, 100) {
+		for tweet := range scraper.SearchTweets(context.Background(), query, 50) {
 			if tweet.Error != nil {
 				panic(tweet.Error)
 			}
@@ -24,6 +25,10 @@ func main() {
 			}
 			seen[tweet.ID] = true
 			fmt.Println(tweet.Text)
+		}
+
+		for range time.Tick(clearInterval) {
+			seen = make(map[string]bool)
 		}
 	}
 }
